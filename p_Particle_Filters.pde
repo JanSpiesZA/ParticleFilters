@@ -70,8 +70,7 @@ void resample()
   float W = 0.0;      //Sum of all the particles weights
   float beta = 0.0;
   float wm = 0.0;
-  int index = int(random(maxParticles));
-  //int[] tempParticles = new int[maxParticles];
+  int index = int(random(maxParticles));  
   Robot tempParticles[] = new Robot[maxParticles];
   
   //Calculates the sum of all the probabilities
@@ -80,8 +79,7 @@ void resample()
     W += particles[k].prob;    
   }
   
-  println("W :"+W);
-  
+  //Determines the biggest importance weight (prob)
   //Normalise the prob by dividing prob by the sum of all probs (W) and saving the value to alpha
   for (int k = 0; k < maxParticles; k++)
   {
@@ -91,33 +89,23 @@ void resample()
      wm = particles[k].prob;      
    }
   }  
-  //println("wm :"+wm);
-
-  
-   //println("index :"+index);
+   
   for (int i = 0; i < maxParticles; i++)
   {
-    beta += random(0, 2*wm);
-    //print(beta+",");
+    beta += random(0, 2*wm);   
     while (beta > particles[index].prob)
-    {
-      //print(".");
+    {      
       beta -= particles[index].prob;
       index = (index + 1) % maxParticles;
     } 
-    tempParticles[i] = particles[index];
-    print(index+",");
+    tempParticles[i] = particles[index];    
   }
   
   for (int k = 0; k < maxParticles; k++)
   {
     fill(0,0,255);
-    ellipse(tempParticles[k].xPos, tempParticles[k].yPos, 20,20);
-    //print(tempParticles[k]+",");  
-    //particles[k] = tempParticles[k];
+    ellipse(tempParticles[k].xPos, tempParticles[k].yPos, 20,20);    
   }
-  
-  
 }
     
 
