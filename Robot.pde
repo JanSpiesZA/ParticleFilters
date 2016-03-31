@@ -6,7 +6,7 @@ class Robot
   float ySpeed = 1.0;
   float robotDiameter = 20.0;
   float noseLength = robotDiameter/2;
-  float heading = 0.0;
+  float heading = random(0, 2*PI);
   float[] distance = new float[maxLandmarks];
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
@@ -42,6 +42,19 @@ class Robot
       ySpeed *= -1;
     }
   }
+
+  void move(float _turnAngle, float _distance)
+  {
+    heading += _turnAngle + randomGaussian() * noiseTurn;    //Add _turnAngle to current heading
+    if (heading >= (2*PI)) heading -= (2*PI);
+    if (heading <= (-2*PI)) heading += (2*PI);    
+    
+    _distance += randomGaussian() * noiseForward;
+    float newX = xPos + _distance * cos(heading);
+    float newY = yPos + _distance * sin(heading);
+    xPos = newX;
+    yPos = newY;
+  }
   
   void display()
   {
@@ -50,11 +63,7 @@ class Robot
       case "ROBOT":
         stroke(0);
         fill(0,255,0);    
-        ellipse(xPos, yPos, robotDiameter, robotDiameter);
-        stroke(0);
-        float noseX = xPos + noseLength * cos(heading);        //Added a robot nose to indicate heading
-        float noseY = yPos + noseLength * sin(heading);
-        line (xPos, yPos, noseX, noseY); 
+        ellipse(xPos, yPos, robotDiameter, robotDiameter);         
         textAlign(CENTER, CENTER);
         textSize(10);
         fill(0);
@@ -71,7 +80,11 @@ class Robot
         //text(prob, xPos,yPos-10);
         //print(prob+",");
         break;
-    }    
+    } 
+    stroke(0);
+    float noseX = xPos + noseLength * cos(heading);        //Added a robot nose to indicate heading
+    float noseY = yPos + noseLength * sin(heading);
+    line (xPos, yPos, noseX, noseY);   
   }
   
   //Calculates linear distances to each landmark
