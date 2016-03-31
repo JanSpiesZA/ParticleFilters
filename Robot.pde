@@ -61,6 +61,12 @@ class Robot
     float newY = yPos + _distance * sin(heading);
     xPos = newX;
     yPos = newY;
+    
+    //Ensures a cyclic world
+    if (xPos > screenWidth) xPos =- screenWidth;
+    if (xPos < 0) xPos += screenWidth;
+    if (yPos > screenHeight) yPos =- screenHeight;
+    if (yPos < 0) yPos += screenHeight;    
   }
   
   void display()
@@ -100,6 +106,7 @@ class Robot
     for (int k = 0; k < maxLandmarks; k++)
     {
       distance[k] = dist(xPos, yPos, landmarks[k].xPos, landmarks[k].yPos);
+      distance[k] += randomGaussian() * noiseSense;
     }
   }
   
