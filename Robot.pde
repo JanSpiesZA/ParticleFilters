@@ -5,6 +5,7 @@ class Robot
   float xSpeed = 1.0;
   float ySpeed = 1.0;
   float robotDiameter = 20.0;
+  float noseLength = robotDiameter/2;
   float heading = 0.0;
   float[] distance = new float[maxLandmarks];
   float noiseForward = 0.0;
@@ -50,6 +51,10 @@ class Robot
         stroke(0);
         fill(0,255,0);    
         ellipse(xPos, yPos, robotDiameter, robotDiameter);
+        stroke(0);
+        float noseX = xPos + noseLength * cos(heading);        //Added a robot nose to indicate heading
+        float noseY = yPos + noseLength * sin(heading);
+        line (xPos, yPos, noseX, noseY); 
         textAlign(CENTER, CENTER);
         textSize(10);
         fill(0);
@@ -60,7 +65,7 @@ class Robot
         stroke(255,0,0);
         fill(255,0,0);
         //ellipse(xPos, yPos, prob*10, prob*10);
-        ellipse(xPos, yPos, 10, 10);
+        ellipse(xPos, yPos, 5, 5);
         textAlign(CENTER, CENTER);
         fill(0);
         //text(prob, xPos,yPos-10);
