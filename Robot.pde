@@ -27,6 +27,13 @@ class Robot
     heading = _Heading;
   }
   
+  void setNoise(float _noiseForward, float _noiseTurn, float _noiseSense)
+  {
+    noiseForward = _noiseForward;
+    noiseTurn = _noiseTurn;
+    noiseSense = _noiseSense;
+  }
+  
   void update()
   {
     xPos += xSpeed;
