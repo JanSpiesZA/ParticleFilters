@@ -34,34 +34,16 @@ class Robot
     noiseSense = _noiseSense;
   }
   
-  void update()
-  {
-    xPos += xSpeed;
-    yPos += ySpeed;
-    
-    if ((xPos > width) || (xPos < 0))
-    {
-      xSpeed *= -1;
-    }
-    
-    if ((yPos > height) || (yPos < 0))
-    {
-      ySpeed *= -1;
-    }
-  }
-
-  void move(float _turnAngle, float _distance)
-  {
-    print("Type: "+nodeType+", Heading: "+heading);
-    heading += _turnAngle + randomGaussian() * noiseTurn;    //Add _turnAngle to current heading
-    
-    println(", TurnAngle :"+_turnAngle+", Heading: "+heading);
+  void move(float _turnAngle, float _forward)
+  {    
+    float orientation = heading + _turnAngle + randomGaussian() * noiseTurn;    //Add _turnAngle to current heading    
+   
     if (heading >= (2*PI)) heading -= (2*PI);
     if (heading <= (-2*PI)) heading += (2*PI);    
     
-    _distance += randomGaussian() * noiseForward;
-    float newX = xPos + _distance * cos(heading);
-    float newY = yPos + _distance * sin(heading);
+    float dist = _forward + randomGaussian() * noiseForward;
+    float newX = xPos + dist * cos(orientation);
+    float newY = yPos + dist * sin(orientation);
     xPos = newX;
     yPos = newY;
     
@@ -69,7 +51,9 @@ class Robot
     if (xPos > screenWidth) xPos =- screenWidth;
     if (xPos < 0) xPos += screenWidth;
     if (yPos > screenHeight) yPos =- screenHeight;
-    if (yPos < 0) yPos += screenHeight;    
+    if (yPos < 0) yPos += screenHeight;
+    
+    heading = orientation;
   }
   
   void display()
@@ -89,8 +73,8 @@ class Robot
       case "PARTICLE":
         stroke(255,0,0);
         fill(255,0,0);
-        //ellipse(xPos, yPos, prob*10, prob*10);
-        ellipse(xPos, yPos, 5, 5);
+        ellipse(xPos, yPos, prob*10, prob*10);
+        //ellipse(xPos, yPos, 5, 5);
         textAlign(CENTER, CENTER);
         fill(0);
         //text(prob, xPos,yPos-10);
@@ -124,13 +108,8 @@ class Robot
     prob = 1.0;
     for (int k = 0; k < maxLandmarks; k++)
     {
-      distance[k] = dist(xPos, yPos, landmarks[k].xPos, landmarks[k].yPos);
-      prob *= exp(- (pow(distance[k] - robot.distance[k],2) / pow(noiseSense,2)/2.0) / sqrt(2*PI * pow(noiseSense,2)));
-    }    
+      distance[k] = dist(xPos, yPos, landmarks[k].xPos, landmarks[k].yPos);      
+      prob *= exp(- (pow(distance[k] - robot.distance[k],2) / pow(noiseSense,2)/2.0) / sqrt(2*PI * pow(noiseSense,2)));      
+    }
   }
-  
-  void resample()
-  {
-    
-  }  
 }

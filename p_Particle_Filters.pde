@@ -2,8 +2,12 @@
 int screenWidth = 400;
 int screenHeight = 400;
 
-int maxParticles = 2;
+int maxParticles = 1000;
 int maxLandmarks = 3;
+
+float noiseForward = 1.0;
+float noiseTurn = 0.1;
+float noiseSense = 5.0;
 
 boolean od = false;
 
@@ -29,8 +33,7 @@ void setup()
   for (int k = 0; k < maxParticles; k++)
   {
     particles[k] = new Robot("PARTICLE");
-    particles[k].setNoise(1.0, 0.0, 0.0);    //Add noise to newly created particle
-    particles[k].set(screenWidth/2, screenHeight/2, 0);
+    particles[k].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle    
   }  
 }
 
@@ -45,28 +48,24 @@ void draw()
 void ownDraw()
 {
   od = true;
-  background(200);  
-  robot.sense();    //Calculates the straight line distance from the robot to each landmark
+  background(200);
+  robot.sense();
+  
   
   
   for (int k = 0; k < maxParticles; k++)
-  {
-    particles[k].measurement_prob();   
-  }
-  
-  //resample();
-  robot.display();  
-  for (int k = 0; k < maxParticles; k++)
-  {   
+  {    
+    particles[k].measurement_prob();
     particles[k].display();
   }
+  robot.display();
+  resample();  
+  
   
   for (int k = 0; k < maxLandmarks; k++)
   {
     landmarks[k].display();
   }
-  
-  
 }
 
 void resample()
@@ -74,34 +73,34 @@ void resample()
   float W = 0.0;      //Sum of all the particles weights
   float beta = 0.0;
   float wm = 0.0;
-  int idx = int(random(maxParticles));  
+  int index = int(random(maxParticles));  
   float alpha = 0.0;    //Normalised weight using all the added prob values of the particles
-  Robot tempParticles[] = new Robot[maxParticles];
+  Robot tempParticles[] = new Robot[maxParticles];  
   
+  for(int k=0; k < maxParticles; k++)
+  {
+    tempParticles[k] = new Robot("PARTICLE");
+  }  
   
-  
-  ////Determines the biggest importance weight (prob)  
-  //for (int k = 0; k < maxParticles; k++)
-  //{      
-  // if (particles[k].prob > wm) 
-  // {
-  //   wm = particles[k].prob;      
-  // }
-  //}  
+  //Determines the biggest importance weight (prob)  
+  for (int k = 0; k < maxParticles; k++)
+  {      
+    if (particles[k].prob > wm) 
+    {
+      wm = particles[k].prob;      
+    }
+  }  
    
   for (int i = 0; i < maxParticles; i++)
   {
-   //beta += random(0, 2*wm);   
-   //while (beta > particles[index].prob)
-   //{      
-   //  beta -= particles[index].prob;
-   //  index = (index + 1) % maxParticles;
-   //} 
-   println("Index: "+idx);
-   tempParticles[i] = particles[idx]; 
-   
-   //print(particles[index]+",");
-   //print(index+",");
+   beta += random(0, 2*wm);   
+   while (beta > particles[index].prob)
+   {      
+    beta -= particles[index].prob;
+    index = (index + 1) % maxParticles;
+   }   
+   tempParticles[i].set(particles[index].xPos, particles[index].yPos, particles[index].heading);
+   tempParticles[i].setNoise(noiseForward, noiseTurn, noiseSense);
   }
   
   ////Normalise the prob by dividing prob by the sum of all probs (W) and saving the value to alpha
@@ -116,19 +115,20 @@ void resample()
   //}
   
   particles = tempParticles;
-  
-  for (int k = 0; k < maxParticles; k++)
-  {
-    println(k + ": "+particles[k].xPos + " : "+ particles[k].yPos +" : " + particles[k].noiseForward);
-  }
   //arrayCopy(tempParticles, particles);
+  
+  
+  //for (int k = 0; k < maxParticles; k++)
+  //{
+  //  println(k + ": "+particles[k].xPos + " : "+ particles[k].yPos +" : " + particles[k].noiseForward);
+  //}
+  
   //for (int k = 0; k < maxParticles; k++)
   //{
   //  fill(0,0,255);
   //  ellipse(tempParticles[k].xPos, tempParticles[k].yPos, 20,20);    
   //}
-}
-    
+}    
 
 void mousePressed()
 {
@@ -136,6 +136,10 @@ void mousePressed()
   {
     //landmarks.set(mouseX, mouseY);
     robot.set(mouseX, mouseY, 0.0);
+    for (int k = 0; k < maxParticles; k++)
+  {    
+    particles[k].measurement_prob();   
+  }
   }
   od = false;
 }
@@ -175,7 +179,7 @@ void keyPressed()
       for (int k = 0; k < maxParticles; k++)
       {
         particles[k].move(0.0,1.0);
-      }
+      }      
       od = false;
       break;
       
@@ -184,7 +188,7 @@ void keyPressed()
       for (int k = 0; k < maxParticles; k++)
       {
         particles[k].move(-0.1,0.0);
-      }
+      }      
       od = false;
       break;
       
@@ -193,7 +197,7 @@ void keyPressed()
       for (int k = 0; k < maxParticles; k++)
       {
         particles[k].move(0.1, 0.0);
-      }
+      }      
       od = false;
       break;
       
