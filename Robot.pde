@@ -13,7 +13,7 @@ class Robot
   float noiseSense = 5.0;
   String nodeType = "";    //ROBOT or PARTICLE
   float prob = 1.0;
-  float alpha = 0.0;    //Normalised weight using all the added prob values of the particles
+  
   
   Robot(String _nodeType)  
   {    
@@ -52,7 +52,10 @@ class Robot
 
   void move(float _turnAngle, float _distance)
   {
+    print("Type: "+nodeType+", Heading: "+heading);
     heading += _turnAngle + randomGaussian() * noiseTurn;    //Add _turnAngle to current heading
+    
+    println(", TurnAngle :"+_turnAngle+", Heading: "+heading);
     if (heading >= (2*PI)) heading -= (2*PI);
     if (heading <= (-2*PI)) heading += (2*PI);    
     

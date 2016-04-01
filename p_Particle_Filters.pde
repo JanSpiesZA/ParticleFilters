@@ -2,7 +2,7 @@
 int screenWidth = 400;
 int screenHeight = 400;
 
-int maxParticles = 100;
+int maxParticles = 2;
 int maxLandmarks = 3;
 
 boolean od = false;
@@ -17,6 +17,7 @@ void setup()
   surface.setSize(screenWidth,screenHeight);
   
   robot = new Robot("ROBOT");
+  robot.set(screenWidth/2, screenHeight/2, 0);
   
   //Create landmarks
   for (int k = 0; k < maxLandmarks; k++)
@@ -28,6 +29,8 @@ void setup()
   for (int k = 0; k < maxParticles; k++)
   {
     particles[k] = new Robot("PARTICLE");
+    particles[k].setNoise(1.0, 0.0, 0.0);    //Add noise to newly created particle
+    particles[k].set(screenWidth/2, screenHeight/2, 0);
   }  
 }
 
@@ -43,8 +46,7 @@ void ownDraw()
 {
   od = true;
   background(200);  
-  robot.sense();    //Calculates the straight line distance to each landmark
-  robot.display();  
+  robot.sense();    //Calculates the straight line distance from the robot to each landmark
   
   
   for (int k = 0; k < maxParticles; k++)
@@ -52,8 +54,8 @@ void ownDraw()
     particles[k].measurement_prob();   
   }
   
-  resample();
-
+  //resample();
+  robot.display();  
   for (int k = 0; k < maxParticles; k++)
   {   
     particles[k].display();
@@ -63,6 +65,8 @@ void ownDraw()
   {
     landmarks[k].display();
   }
+  
+  
 }
 
 void resample()
@@ -70,42 +74,59 @@ void resample()
   float W = 0.0;      //Sum of all the particles weights
   float beta = 0.0;
   float wm = 0.0;
-  int index = int(random(maxParticles));  
+  int idx = int(random(maxParticles));  
+  float alpha = 0.0;    //Normalised weight using all the added prob values of the particles
   Robot tempParticles[] = new Robot[maxParticles];
   
-  //Calculates the sum of all the probabilities
-  for (int k=0; k < maxParticles; k++)
-  {
-    W += particles[k].prob;    
-  }
   
-  //Determines the biggest importance weight (prob)
-  //Normalise the prob by dividing prob by the sum of all probs (W) and saving the value to alpha
-  for (int k = 0; k < maxParticles; k++)
-  {
-   //particles[k].prob = particles[k].prob / W;   
-   if (particles[k].prob > wm) 
-   {
-     wm = particles[k].prob;      
-   }
-  }  
+  
+  ////Determines the biggest importance weight (prob)  
+  //for (int k = 0; k < maxParticles; k++)
+  //{      
+  // if (particles[k].prob > wm) 
+  // {
+  //   wm = particles[k].prob;      
+  // }
+  //}  
    
   for (int i = 0; i < maxParticles; i++)
   {
-    beta += random(0, 2*wm);   
-    while (beta > particles[index].prob)
-    {      
-      beta -= particles[index].prob;
-      index = (index + 1) % maxParticles;
-    } 
-    tempParticles[i] = particles[index];    
+   //beta += random(0, 2*wm);   
+   //while (beta > particles[index].prob)
+   //{      
+   //  beta -= particles[index].prob;
+   //  index = (index + 1) % maxParticles;
+   //} 
+   println("Index: "+idx);
+   tempParticles[i] = particles[idx]; 
+   
+   //print(particles[index]+",");
+   //print(index+",");
   }
+  
+  ////Normalise the prob by dividing prob by the sum of all probs (W) and saving the value to alpha
+  ////Calculates the sum of all the probabilities
+  //for (int k=0; k < maxParticles; k++)
+  //{
+  //  W += particles[k].prob;    
+  //}
+  //for (int k=0; k < maxParticles; k++)
+  //{
+  //  particles[k].prob = particles[k].prob / W;
+  //}
+  
+  particles = tempParticles;
   
   for (int k = 0; k < maxParticles; k++)
   {
-    fill(0,0,255);
-    ellipse(tempParticles[k].xPos, tempParticles[k].yPos, 20,20);    
+    println(k + ": "+particles[k].xPos + " : "+ particles[k].yPos +" : " + particles[k].noiseForward);
   }
+  //arrayCopy(tempParticles, particles);
+  //for (int k = 0; k < maxParticles; k++)
+  //{
+  //  fill(0,0,255);
+  //  ellipse(tempParticles[k].xPos, tempParticles[k].yPos, 20,20);    
+  //}
 }
     
 
@@ -145,7 +166,39 @@ void keyPressed()
       }
       break;
       
-    case 'n':
+    case 'n':      
+      od = false;
+      break;
+
+    case 'w':
+      robot.move(0,1);
+      for (int k = 0; k < maxParticles; k++)
+      {
+        particles[k].move(0.0,1.0);
+      }
+      od = false;
+      break;
+      
+    case 'a':
+      robot.move(-0.1,0.0);
+      for (int k = 0; k < maxParticles; k++)
+      {
+        particles[k].move(-0.1,0.0);
+      }
+      od = false;
+      break;
+      
+    case 'd':
+      robot.move(0.1, 0.0);
+      for (int k = 0; k < maxParticles; k++)
+      {
+        particles[k].move(0.1, 0.0);
+      }
+      od = false;
+      break;
+      
+    case 'r':
+      resample();
       od = false;
       break;
   }
