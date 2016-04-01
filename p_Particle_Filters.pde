@@ -153,17 +153,6 @@ void keyPressed()
       landmarks[2].yPos = mouseY;
       od = false;
       break;
-      
-    case 'c':
-      for (int k = 0; k < maxLandmarks; k++)
-      {
-        landmarks[k].set(random(width), random(height));
-      }
-      break;
-      
-    case 'n':      
-      od = false;
-      break;
 
     case 'w':
       robot.move(0,1);
@@ -191,11 +180,6 @@ void keyPressed()
       {
         particles[k].move(0.1, 0.0);
       }      
-      resample();
-      od = false;
-      break;
-      
-    case 'r':
       resample();
       od = false;
       break;
