@@ -132,16 +132,11 @@ void resample()
 
 void mousePressed()
 {
-  if (mouseButton == LEFT)
-  {
-    //landmarks.set(mouseX, mouseY);
-    robot.set(mouseX, mouseY, 0.0);
-    for (int k = 0; k < maxParticles; k++)
+  if (mouseButton == RIGHT)
   {    
-    particles[k].measurement_prob();   
-  }
-  }
-  od = false;
+    robot.set(mouseX, mouseY, 0.0);   
+    od = false;
+  }  
 }
 
 void keyPressed()
@@ -150,17 +145,20 @@ void keyPressed()
   {
     case '1':
       landmarks[0].xPos = mouseX;
-      landmarks[0].yPos = mouseY;            
+      landmarks[0].yPos = mouseY; 
+      od = false;
       break;
       
     case '2':
       landmarks[1].xPos = mouseX;
-      landmarks[1].yPos = mouseY;            
+      landmarks[1].yPos = mouseY;
+      od = false;
       break;
       
     case '3':
       landmarks[2].xPos = mouseX;
-      landmarks[2].yPos = mouseY;            
+      landmarks[2].yPos = mouseY;
+      od = false;
       break;
       
     case 'c':
