@@ -1,5 +1,5 @@
 # ParticleFilters
-This is Processing program to simulate particle filter localization.
+This is a Processing program to simulate particle filter localization.
 
 ##Installation
 1) Download the 3 files and copy into a directory with the name p_Particle_Filters
