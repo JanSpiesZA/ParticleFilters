@@ -8,6 +8,13 @@ class Landmark
     yPos = random(height);
   }
   
+  Landmark(float _xPos, float _yPos)
+  {
+    xPos = _xPos;
+    yPos = _yPos;
+  }
+    
+  
   void set(float _xPos, float _yPos)
   {
     xPos = _xPos;

@@ -6,13 +6,13 @@ class Robot
   float ySpeed = 1.0;
   float robotDiameter = 20.0;
   float noseLength = robotDiameter/2;
-  float heading = random(0, 2*PI);
-  float[] distance = new float[maxLandmarks];
+  float heading = random(0, 2*PI);  
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
   float noiseSense = 5.0;
   String nodeType = "";    //ROBOT or PARTICLE
-  float prob = 1.0;
+  float prob = 1.0;  
+  FloatList distance = new FloatList();
   
   
   Robot(String _nodeType)  
@@ -88,12 +88,15 @@ class Robot
   }
   
   //Calculates linear distances to each landmark
+  //  Robot must store a list of distances to landmarks in ordert o have it compared with particles
   void sense()
   {
-    for (int k = 0; k < maxLandmarks; k++)
-    {
-      distance[k] = dist(xPos, yPos, landmarks[k].xPos, landmarks[k].yPos);
-      distance[k] += randomGaussian() * noiseSense;
+    distance.clear();
+    for (int k = 0; k < landMarks.size(); k++)
+    {      
+      float tempDist = dist(xPos, yPos, landMarks.get(k).xPos, landMarks.get(k).yPos);
+      tempDist += randomGaussian() * noiseSense;
+      distance.append(tempDist);
     }
   }
   
@@ -105,11 +108,14 @@ class Robot
   //  x      - Robot's measurement to the same landmark  
   void measurement_prob()
   {
+    distance.clear();    
     prob = 1.0;
-    for (int k = 0; k < maxLandmarks; k++)
-    {
-      distance[k] = dist(xPos, yPos, landmarks[k].xPos, landmarks[k].yPos);      
-      prob *= exp(- (pow(distance[k] - robot.distance[k],2) / pow(noiseSense,2)/2.0) / sqrt(2*PI * pow(noiseSense,2)));      
+    
+    for (int k = 0; k < landMarks.size(); k++)
+    { 
+      float tempDist = dist(xPos, yPos, landMarks.get(k).xPos, landMarks.get(k).yPos);
+      tempDist += randomGaussian() * noiseSense;
+      prob *= exp(- (pow(tempDist - robot.distance.get(k),2) / pow(noiseSense,2)/2.0) / sqrt(2*PI * pow(noiseSense,2)));      
     }
   }
 }

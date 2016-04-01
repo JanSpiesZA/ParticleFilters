@@ -12,8 +12,8 @@ float noiseSense = 5.0;
 boolean od = false;
 
 Robot robot;
-Landmark landmarks[] = new Landmark[maxLandmarks];
 Robot particles[] = new Robot[maxParticles];
+ArrayList<Landmark> landMarks = new ArrayList<Landmark>();
 
 void setup()
 {
@@ -22,12 +22,6 @@ void setup()
   
   robot = new Robot("ROBOT");
   robot.set(screenWidth/2, screenHeight/2, 0);
-  
-  //Create landmarks
-  for (int k = 0; k < maxLandmarks; k++)
-  {
-    landmarks[k] = new Landmark();
-  }
   
   //Creates particles
   for (int k = 0; k < maxParticles; k++)
@@ -39,25 +33,27 @@ void setup()
 
 void draw()
 { 
-  if (!od) ownDraw();  
+  if (!od) ownDraw(); 
 }
 
 void ownDraw()
 {
   od = true;
   background(200);
+  
+  for (int k = 0; k < landMarks.size(); k++)
+  {
+    landMarks.get(k).display();
+  }
+  
   robot.sense();
   
   for (int k = 0; k < maxParticles; k++)
   {    
     particles[k].measurement_prob();
     particles[k].display();
-  }
+  } 
   
-  for (int k = 0; k < maxLandmarks; k++)
-  {
-    landmarks[k].display();
-  }  
   robot.display();
 }
 
@@ -108,6 +104,7 @@ void resample()
   //}
   
   particles = tempParticles;
+  
   //arrayCopy(tempParticles, particles);
   
   
@@ -125,6 +122,32 @@ void resample()
 
 void mousePressed()
 {
+  boolean landMarkFound = false;
+  int idx = 0;   
+  
+  if (mouseButton == LEFT) 
+  {      
+    for (int k = 0; k < landMarks.size(); k++)
+    {
+      float distToLandMark = dist(mouseX,mouseY, landMarks.get(k).xPos, landMarks.get(k).yPos);
+      if (distToLandMark < 10)
+      {        
+        landMarkFound = true;
+        idx = k;
+      }
+    }    
+    
+    if (landMarkFound)
+    {
+      landMarks.remove(idx);      
+    }
+    else
+    {
+      landMarks.add(new Landmark(mouseX,mouseY));
+    }  
+    od = false;
+  }
+  
   if (mouseButton == RIGHT)
   {    
     robot.set(mouseX, mouseY, 0.0);   
@@ -136,24 +159,6 @@ void keyPressed()
 {
   switch (key)
   {
-    case '1':
-      landmarks[0].xPos = mouseX;
-      landmarks[0].yPos = mouseY; 
-      od = false;
-      break;
-      
-    case '2':
-      landmarks[1].xPos = mouseX;
-      landmarks[1].yPos = mouseY;
-      od = false;
-      break;
-      
-    case '3':
-      landmarks[2].xPos = mouseX;
-      landmarks[2].yPos = mouseY;
-      od = false;
-      break;
-
     case 'w':
       robot.move(0,1);
       for (int k = 0; k < maxParticles; k++)
