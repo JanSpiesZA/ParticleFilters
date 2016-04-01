@@ -39,10 +39,7 @@ void setup()
 
 void draw()
 { 
-  if (!od)
-  {
-  ownDraw();
-  }
+  if (!od) ownDraw();  
 }
 
 void ownDraw()
@@ -51,21 +48,17 @@ void ownDraw()
   background(200);
   robot.sense();
   
-  
-  
   for (int k = 0; k < maxParticles; k++)
   {    
     particles[k].measurement_prob();
     particles[k].display();
   }
-  robot.display();
-  resample();  
-  
   
   for (int k = 0; k < maxLandmarks; k++)
   {
     landmarks[k].display();
-  }
+  }  
+  robot.display();
 }
 
 void resample()
@@ -178,6 +171,7 @@ void keyPressed()
       {
         particles[k].move(0.0,1.0);
       }      
+      resample();
       od = false;
       break;
       
@@ -187,6 +181,7 @@ void keyPressed()
       {
         particles[k].move(-0.1,0.0);
       }      
+      resample();
       od = false;
       break;
       
@@ -196,6 +191,7 @@ void keyPressed()
       {
         particles[k].move(0.1, 0.0);
       }      
+      resample();
       od = false;
       break;
       
