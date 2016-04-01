@@ -188,6 +188,20 @@ void keyPressed()
       resample();
       od = false;
       break;
+      
+    case 'p':    //Randomize particles
+      for (int k = 0; k < maxParticles; k++)
+      {
+        particles[k] = new Robot("PARTICLE");
+        particles[k].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle    
+      }  
+      od = false;
+      break;
+      
+    case 'l':    //Removes ALL landMarks
+      landMarks.clear();
+      od = false;
+      break;
   }
 }
   
