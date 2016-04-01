@@ -130,7 +130,7 @@ void mousePressed()
     for (int k = 0; k < landMarks.size(); k++)
     {
       float distToLandMark = dist(mouseX,mouseY, landMarks.get(k).xPos, landMarks.get(k).yPos);
-      if (distToLandMark < 10)
+      if (distToLandMark < 5)
       {        
         landMarkFound = true;
         idx = k;

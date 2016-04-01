@@ -25,6 +25,7 @@ class Landmark
   {
     stroke(0);
     fill(0,0,255);
+    rectMode(CENTER);
     rect(xPos, yPos, 5, 5);
   }
     
